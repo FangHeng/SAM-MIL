@@ -159,3 +159,5 @@ train.sh
 train_*.sh
 /scripts/wandb/
 /old/
+
+.idea
