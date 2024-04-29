@@ -161,3 +161,4 @@ train_*.sh
 /old/
 
 .idea
+.DS_Store
