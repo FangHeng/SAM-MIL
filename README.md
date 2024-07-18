@@ -26,14 +26,14 @@ We used sam_vit_h as the backbone model for the segmentation task.
 
 The preprocessing code can be found in the `WSI_preprocess` folder. 
 
-We adjusted the preprocessing steps in the [CLAM](https://github.com/mahmoodlab/CLAM) repository.
+- We adjusted the preprocessing steps in the [CLAM](https://github.com/mahmoodlab/CLAM) repository.
 We made modifications to the original data preprocessing.
 
-PLIP model and weight can be found in [this](https://github.com/PathologyFoundation/plip).
+- PLIP model and weight can be found in [this](https://github.com/PathologyFoundation/plip).
 
 [//]: # (Download the preprocessed patch features: [Baidu Cloud]&#40;&#41;.)
 
-1. Create patches and SAM segmentations for the WSIs.
+#### 1. Create patches and SAM segmentations for the WSIs.
 
 Camelyon16:
 ```bash
@@ -45,7 +45,7 @@ TCGA-NSCLC：
 python 01_create_patches_and_sam_segment.py --source '/path/to/your/WSI/folder' --save_dir '/path/to/save/patches' --patch_size 512 --step_size 512 --preset 'tcga.csv' --seg --patch --stitch --use_sam --sam_checkpoint '/path/to/sam_weights.pth'
 ```
 
-2. Extract the features from the patches and SAM segmentations.
+#### 2. Extract the features from the patches and SAM segmentations.
 
 Camelyon16:
 ```bash
@@ -57,7 +57,7 @@ TCGA-NSCLC:
 python 02_extract_features_and_group_feature.py --data_h5_dir '/path/to/patches' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --use_sam --patch_size 512 --batch_size 512 --target_patch_size 224 --slide_ext .svs
 ```
 
-3. Generate feature from original extracted features.
+#### 3. Generate feature from original extracted features.
 
 From features(.h5) to our model input:
 ```bash
@@ -69,7 +69,7 @@ From features(.pt) to our model input:
 python extract_features_from_pt.py --data_feat_pt_dir '/path/to/pt/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --patch_size 512 --slide_ext .tif/.svs
 ```
 
-### Feature Extraction
+#### Feature Extraction
 Some code snippets about PLIP feature are shown below:
 
 `extract_features_fp.py`:
