@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument('--loss', default='ce', type=str, help='Classification Loss, defualt nll_surv in survival prediction [ce, bce, nll_surv]')
     parser.add_argument('--opt', default='adam', type=str, help='Optimizer [adam, adamw]')
     parser.add_argument('--save_best_model_stage', default=0., type=float, help='See DTFD')
-    parser.add_argument('--model', default='mhim', type=str, help='Model name')
+    parser.add_argument('--model', default='sam', type=str, help='Model name')
     parser.add_argument('--seed', default=2021, type=int, help='random number [2021]' )
     parser.add_argument('--lr', default=2e-4, type=float, help='Initial learning rate [0.0002]')
     parser.add_argument('--lr_sche', default='cosine', type=str, help='Deacy of learning rate [cosine, step, const]')
@@ -91,15 +91,15 @@ def parse_args():
     parser.add_argument('--merge_test', action='store_true',  help='cl loss alpha')
 
     ## sam_mil
-    parser.add_argument('--sam_mask', action='store_true', help='lr_scheduler_update_per_iter')
-    parser.add_argument('--sigmoid_k', default=0.0005, type=float, help='mask ratio')
-    parser.add_argument('--sigmoid_A0', default=5000, type=float, help='mask ratio')
-    parser.add_argument('--mask_non_group_feat', action='store_true', help='lr_scheduler_update_per_iter')
-    parser.add_argument('--mask_by_seg_area', action='store_true', help='lr_scheduler_update_per_iter')
-    parser.add_argument('--num_group', default=3, type=int, help='mask ratio')
-    parser.add_argument('--split_bag', action='store_true', help='lr_scheduler_update_per_iter')
-    parser.add_argument('--group_alpha', default=0., type=float, help='mask ratio')
-    parser.add_argument('--consistency_alpha', default=0., type=float, help='mask ratio')
+    parser.add_argument('--sam_mask', action='store_true', help='Enable SAM mask')
+    parser.add_argument('--sigmoid_k', default=0.0005, type=float, help='Adjustable sigmoid k')
+    parser.add_argument('--sigmoid_A0', default=5000, type=float, help='Adjustable sigmoid A0')
+    parser.add_argument('--mask_non_group_feat', action='store_true', help='Mask non-group feature')
+    parser.add_argument('--mask_by_seg_area', action='store_true', help='Group mask by seg area')
+    parser.add_argument('--num_group', default=3, type=int, help='number of pseudo-bags')
+    parser.add_argument('--split_bag', action='store_true', help='Enable split bag')
+    parser.add_argument('--group_alpha', default=0., type=float, help='alpha of group loss')
+    parser.add_argument('--consistency_alpha', default=0., type=float, help='alpha of consistency loss')
 
     # Misc
     parser.add_argument('--title', default='default', type=str, help='Title of exp')

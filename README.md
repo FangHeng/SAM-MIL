@@ -1,6 +1,19 @@
-# SAM-MIL
+# SAM-MIL (Updating)
 
-This repository contains the code for the paper "SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification".(ACM MM 2024, Under Review)
+Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification**", ACM Multimedia 2024. [[arXiv]]()
+
+<p align = "center">
+<img src="./doc/sammil.png" width="60%"/>
+</p>
+
+## TODO
+
+- [x] Add the code for the training and testing of the model.
+- [x] Add the code for the preprocessing of the datasets.
+- [x] Add the code for the visualization of the results.
+- [ ] Add the extracted features of the datasets(Camelyon16, TCGA-NSCLC).
+- [ ] Improving README document.
+- [ ] Improving the code structure.
 
 ## Preparation
 
@@ -13,31 +26,31 @@ We used sam_vit_h as the backbone model for the segmentation task.
 
 The preprocessing code can be found in the `WSI_preprocess` folder. 
 
-We followed the preprocessing steps in the [CLAM](https://github.com/mahmoodlab/CLAM) repository.
+We adjusted the preprocessing steps in the [CLAM](https://github.com/mahmoodlab/CLAM) repository.
 We made modifications to the original data preprocessing.
 
 1. Create patches and SAM segmentations for the WSIs.
 
 Camelyon16:
 ```bash
-python 01_create_patches_&_sam_segment.py --source 'path/to/your/WSI/folder' --save_dir 'path/to/save/patches' --patch_size 512 --step_size 512 --preset 'bwh_biopsy.csv' --seg --patch --stitch --use_sam --sam_checkpoint 'path/to/sam_weights.pth'
+python 01_create_patches_and_sam_segment.py --source 'path/to/your/WSI/folder' --save_dir 'path/to/save/patches' --patch_size 512 --step_size 512 --preset 'bwh_biopsy.csv' --seg --patch --stitch --use_sam --sam_checkpoint 'path/to/sam_weights.pth'
 ```
 
 TCGA-NSCLC：
 ```bash
-python 01_create_patches_&_sam_segment.py --source '/path/to/your/WSI/folder' --save_dir '/path/to/save/patches' --patch_size 512 --step_size 512 --preset 'tcga.csv' --seg --patch --stitch --use_sam --sam_checkpoint '/path/to/sam_weights.pth'
+python 01_create_patches_and_sam_segment.py --source '/path/to/your/WSI/folder' --save_dir '/path/to/save/patches' --patch_size 512 --step_size 512 --preset 'tcga.csv' --seg --patch --stitch --use_sam --sam_checkpoint '/path/to/sam_weights.pth'
 ```
 
 2. Extract the features from the patches and SAM segmentations.
 
 Camelyon16:
 ```bash
-python 02_extract_features_&_group_feature.py --data_h5_dir '/path/to/patches' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --use_sam --patch_size 512 --batch_size 512 --target_patch_size 224 --slide_ext .tif
+python 02_extract_features_and_group_feature.py --data_h5_dir '/path/to/patches' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --use_sam --patch_size 512 --batch_size 512 --target_patch_size 224 --slide_ext .tif
 ```
 
 TCGA-NSCLC:
 ```bash
-python 02_extract_features_&_group_feature.py --data_h5_dir '/path/to/patches' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --use_sam --patch_size 512 --batch_size 512 --target_patch_size 224 --slide_ext .svs
+python 02_extract_features_and_group_feature.py --data_h5_dir '/path/to/patches' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --use_sam --patch_size 512 --batch_size 512 --target_patch_size 224 --slide_ext .svs
 ```
 
 3. Generate feature from original extracted features.
@@ -61,3 +74,12 @@ Train the model:
 python main.py --project=your_project --datasets=camelyon16/tcga --dataset_root=/path/to/your/dataset --model_path=/path/to/save/model --cv_fold=5 --title=your_title --model=sam --sam_mask --mask_non_group_feat --mask_by_seg_area --backbone=attn --model_ema --mrh_sche --seed=2021 --mask_ratio=0.9 --select_mask --num_group=5 --group_alpha=0.5 --consistency_alpha=1000 --no_merge --num_workers=0 --persistence --wandb
 ```
 
+## Citing SAM-MIL
+
+If you find SAM-MIL useful in your research, please consider citing the following paper:
+
+```
+@article{SAM-MIL,
+
+}
+```

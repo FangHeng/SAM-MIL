@@ -154,7 +154,7 @@ def one_fold(args,k,ckc_metric,te_ckc_metric,dataset):
         _teacher_init =args.teacher_init
 
     # --->bulid networks
-    if args.model == 'mhim':
+    if args.model == 'sam':
         if args.mrh_sche:
             mrh_sche = cosine_scheduler(args.mask_ratio_h,0.,epochs=args.num_epoch,niter_per_ep=len(train_loader))
         else:
