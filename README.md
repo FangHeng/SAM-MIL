@@ -29,6 +29,10 @@ The preprocessing code can be found in the `WSI_preprocess` folder.
 We adjusted the preprocessing steps in the [CLAM](https://github.com/mahmoodlab/CLAM) repository.
 We made modifications to the original data preprocessing.
 
+PLIP model and weight can be found in [this](https://github.com/PathologyFoundation/plip).
+
+[//]: # (Download the preprocessed patch features: [Baidu Cloud]&#40;&#41;.)
+
 1. Create patches and SAM segmentations for the WSIs.
 
 Camelyon16:
@@ -63,6 +67,29 @@ python extract_features_from_h5.py --data_feat_h5_dir '/path/to/h5/features' --d
 From features(.pt) to our model input:
 ```bash
 python extract_features_from_pt.py --data_feat_pt_dir '/path/to/pt/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --patch_size 512 --slide_ext .tif/.svs
+```
+
+### Feature Extraction
+Some code snippets about PLIP feature are shown below:
+
+`extract_features_fp.py`:
+```
+model = PLIP()
+n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
+mean, std = (0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)
+eval_transforms = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean = mean, std = std)])
+```
+
+`models/plip.py`
+```
+from transformers import CLIPVisionModelWithProjection
+
+class PLIP(torch.nn.Module):
+    def __init__(self):
+        super(PLIPM,self).__init__()
+        self.model = model = CLIPVisionModelWithProjection.from_pretrained("vinid/plip")
+    def forward(self, input):
+        return self.model(batch_input).image_embeds
 ```
 
 ## Training
