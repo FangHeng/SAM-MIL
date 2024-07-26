@@ -1,6 +1,7 @@
 # SAM-MIL (Updating)
 
-Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification**", ACM Multimedia 2024. [[arXiv]]()
+Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification**", ACM Multimedia 2024. 
+[[arXiv]]() [[ACM]]()
 
 <p align = "center">
 <img src="./doc/sammil.png" width="60%"/>
@@ -17,10 +18,10 @@ Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance 
 
 ## Preparation
 
-We used the Segment Anything Model from the [original repository](https://github.com/facebookresearch/segment-anything) to implement visual segmentation of WSIs.
+We used the Segment Anything Model from the [official repository](https://github.com/facebookresearch/segment-anything) to implement visual segmentation of WSIs.
 
-The weights used in the experiment can be found [here](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth). \
-We used sam_vit_h as the backbone model for the segmentation task.
+- The weights used in the experiment can be found [here](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth). 
+- We used sam_vit_h as the backbone model for the segmentation task.
 
 ## Preprocessing
 
@@ -37,7 +38,7 @@ We made modifications to the original data preprocessing.
 
 Camelyon16:
 ```bash
-python 01_create_patches_and_sam_segment.py --source 'path/to/your/WSI/folder' --save_dir 'path/to/save/patches' --patch_size 512 --step_size 512 --preset 'bwh_biopsy.csv' --seg --patch --stitch --use_sam --sam_checkpoint 'path/to/sam_weights.pth'
+python 01_create_patches_and_sam_segment.py --source '/path/to/your/WSI/folder' --save_dir 'path/to/save/patches' --patch_size 512 --step_size 512 --preset 'bwh_biopsy.csv' --seg --patch --stitch --use_sam --sam_checkpoint 'path/to/sam_weights.pth'
 ```
 
 TCGA-NSCLC：
