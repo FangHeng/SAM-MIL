@@ -1,7 +1,10 @@
 # SAM-MIL (Updating)
 
 Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification**", ACM Multimedia 2024. 
-[[arXiv]]() [[ACM]]()
+[[arXiv]](https://arxiv.org/abs/2407.17689) 
+[[PDF]](https://arxiv.org/pdf/2407.17689)
+
+[//]: # ([[ACM]]&#40;&#41;)
 
 <p align = "center">
 <img src="./doc/sammil.png" width="60%"/>
