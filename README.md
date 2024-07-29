@@ -110,7 +110,10 @@ python main.py --project=your_project --datasets=camelyon16/tcga --dataset_root=
 If you find SAM-MIL useful in your research, please consider citing the following paper:
 
 ```
-@article{SAM-MIL,
-
+@article{fang2024sam,
+  title={SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification},
+  author={Fang, Heng and Huang, Sheng and Tang, Wenhao and Huangfu, Luwen and Liu, Bo},
+  journal={arXiv preprint arXiv:2407.17689},
+  year={2024}
 }
 ```
