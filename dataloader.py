@@ -8,6 +8,13 @@ from collections import Counter
 from torch.utils.data import Dataset
 from sklearn.model_selection import StratifiedKFold
 
+try:
+    import h5py
+except:
+    print('no h5py')
+    
+os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
+
 def readCSV(filename):
     lines = []
     with open(filename, "r") as f:
@@ -234,15 +241,9 @@ class TCGADataset_SAM(Dataset):
             _ids = np.where(_sides != '0')[0]
             for _idx in _ids:
                 if persistence:
-                    if keep_same_psize:
-                        patch = h5py.File(os.path.join(self.root, 'h5_files', _sides[_idx]), "r")
-                        feat, loc = np.array(patch['features']), np.array(patch['coords']) // 512
-                        self.slide_name.append(
-                            crop_wsi(patch_loc=loc, patch_feat=feat, feat_map_size=keep_same_psize, is_train=is_train))
-                    else:
-                        self.slide_name.append(torch.load(os.path.join(self.root, 'pt_files', _sides[_idx])))
-                        self.is_group_feat.append(np.array(h5py.File(os.path.join(self.root, 'sam_info', os.path.splitext(_sides[_idx])[0] + '.h5'), 'r')['is_group_feat']))
-                        self.relative_area.append(np.array(h5py.File(os.path.join(self.root, 'sam_info', os.path.splitext(_sides[_idx])[0] + '.h5'), 'r')['relative_area']))
+                    self.slide_name.append(torch.load(os.path.join(self.root, 'pt_files', _sides[_idx])))
+                    self.is_group_feat.append(np.array(h5py.File(os.path.join(self.root, 'sam_info', os.path.splitext(_sides[_idx])[0] + '.h5'), 'r')['is_group_feat']))
+                    self.relative_area.append(np.array(h5py.File(os.path.join(self.root, 'sam_info', os.path.splitext(_sides[_idx])[0] + '.h5'), 'r')['relative_area']))
 
                 else:
                     self.slide_name.append(_sides[_idx])
@@ -271,13 +272,7 @@ class TCGADataset_SAM(Dataset):
             is_group_feat = self.is_group_feat[idx]
             relative_area = self.relative_area[idx]
         else:
-            if self.keep_same_psize > 0:
-                patch = h5py.File(os.path.join(self.root, 'h5', os.path.splitext(self.slide_name[idx])[0] + '.h5'), "r")
-                feat, loc = np.array(patch['features']), np.array(patch['coords']) // 512
-                features = crop_wsi(patch_loc=loc, patch_feat=feat, feat_map_size=self.keep_same_psize,
-                                    is_train=self.is_train)
-            else:
-                features = torch.load(os.path.join(self.root, 'pt_files', file_path))
+            features = torch.load(os.path.join(self.root, 'pt_files', file_path))
 
             with h5py.File(os.path.join(self.root, 'sam_info', os.path.splitext(self.slide_name[idx])[0] + '.h5'), 'r') as h5_file:
                 is_group_feat = np.array(h5_file['is_group_feat'])
@@ -308,19 +303,9 @@ class C16Dataset_SAM(Dataset):
 
         if persistence:
             # TODO: Not support to C16+C17
-            if self.keep_same_psize > 0:
-                self.feats = []
-                for _f in file_name:
-                    patch = h5py.File(os.path.join(root,'h5', _f+'.h5'),"r")
-                    feat,loc = np.array(patch['features']), np.array(patch['coords'])// 512
-                    self.feats.append(crop_wsi(gather_flag=True,patch_loc=loc,patch_feat=feat,feat_map_size=self.keep_same_psize,is_train=is_train))
-            else:
-                if self.is_all:
-                    self.feats = [ torch.load(os.path.join(root,'c16','pt', _f+'.pt')) if _f.split('_')[0] != 'patient' else torch.load(os.path.join(root,'c17','pt', _f+'.pt')) for _f in file_name ]
-                else:
-                    self.feats = [ torch.load(os.path.join(root,'pt', _f+'.pt')) for _f in file_name ]
-                    self.is_group_feat = [ np.array(h5py.File(os.path.join(root, 'sam', _f + '.h5'), 'r')['is_group_feat']) for _f in file_name]
-                    self.relative_area = [ np.array(h5py.File(os.path.join(root, 'sam', _f + '.h5'), 'r')['relative_area']) for _f in file_name]
+                self.feats = [ torch.load(os.path.join(root,'pt', _f+'.pt')) for _f in file_name ]
+                self.is_group_feat = [ np.array(h5py.File(os.path.join(root, 'sam', _f + '.h5'), 'r')['is_group_feat']) for _f in file_name]
+                self.relative_area = [ np.array(h5py.File(os.path.join(root, 'sam', _f + '.h5'), 'r')['relative_area']) for _f in file_name]
 
     def __len__(self):
         return self.size
@@ -340,19 +325,14 @@ class C16Dataset_SAM(Dataset):
             sam_path = os.path.join(self.root, 'sam')
 
             # TODO: Not support to C16+C17
-            if self.keep_same_psize > 0:
-                patch = h5py.File(os.path.join(self.root,'h5', self.file_name[idx] +'.h5'),"r")
-                feat,loc = np.array(patch['features']), np.array(patch['coords']) // 512
-                features = crop_wsi(gather_flag=True,patch_loc=loc,patch_feat=feat,feat_map_size=self.keep_same_psize,is_train=self.is_train)
+            if self.is_all:
+                file_path = os.path.join(dir_path, 'c16',self.file_name[idx]+'.pt') if self.file_name[idx].split('_')[0] != 'patient' else os.path.join(dir_path, 'c17',self.file_name[idx]+'.pt')
             else:
-                if self.is_all:
-                    file_path = os.path.join(dir_path, 'c16',self.file_name[idx]+'.pt') if self.file_name[idx].split('_')[0] != 'patient' else os.path.join(dir_path, 'c17',self.file_name[idx]+'.pt')
-                else:
-                    file_path = os.path.join(dir_path, self.file_name[idx]+'.pt')
-                    sam_info_path = os.path.join(sam_path, self.file_name[idx]+'.h5')
-                # file_path = self.csv_file[idx] # ['1_1.png']
-                # patient_path = file_path[1]
-                features = torch.load(file_path)
+                file_path = os.path.join(dir_path, self.file_name[idx]+'.pt')
+                sam_info_path = os.path.join(sam_path, self.file_name[idx]+'.h5')
+            # file_path = self.csv_file[idx] # ['1_1.png']
+            # patient_path = file_path[1]
+            features = torch.load(file_path)
 
             with h5py.File(os.path.join(self.root, 'sam', self.file_name[idx] + '.h5'), 'r') as h5_file:
                 is_group_feat = np.array(h5_file['is_group_feat'])

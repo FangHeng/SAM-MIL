@@ -60,11 +60,8 @@ def train_loop(args,model,model_tea,loader,optimizer,device,amp_autocast,criteri
                 else:
                     attn, cls_tea, pre_correct = None, None, False
                 cls_tea = None if args.cl_alpha == 0. else cls_tea
-                cls_tea = pred if args.cl_type == 'logits' else cls_tea
-                pred_correct = pred[0] == label[0] if args.correct_label_filter else False
 
                 train_logits, cls_loss, patch_num, keep_num = model(bag, attn, cls_tea, i=epoch * len(loader) + i,
-                                                                    pred_correct=pred_correct,
                                                                     is_group_feat=is_group_feat,
                                                                     relative_area=relative_area)
             elif args.model == 'mhim':
@@ -127,12 +124,9 @@ def train_loop(args,model,model_tea,loader,optimizer,device,amp_autocast,criteri
                         attn, cls_tea, pre_correct = None, None, False
 
                     cls_tea = None if args.cl_alpha == 0 else cls_tea
-                    cls_tea = pred if args.cl_type == 'logits' else cls_tea
-                    pred_correct = pred[0] == group_label[0] if args.correct_label_filter else False
 
                     train_logits, cls_loss, patch_num, keep_num = model(group_bag, attn, cls_tea,
-                                                                        i=epoch * len(loader),
-                                                                        pred_correct=pred_correct)
+                                                                        i=epoch * len(loader))
 
                     # save the results
                     group_results.append({
@@ -141,7 +135,6 @@ def train_loop(args,model,model_tea,loader,optimizer,device,amp_autocast,criteri
                         "patch_num": patch_num,
                         "keep_num": keep_num,
                         "pred": pred,
-                        "pred_correct": pred_correct
                     })
 
                 # initialize the total loss

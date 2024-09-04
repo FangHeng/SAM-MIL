@@ -15,6 +15,7 @@ Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance 
 - [x] Add the code for the training and testing of the model.
 - [x] Add the code for the preprocessing of the datasets.
 - [x] Add the code for the visualization of the results.
+- [ ] Improving the visualization code.
 - [ ] Add the extracted features of the datasets(Camelyon16, TCGA-NSCLC).
 - [ ] Improving README document.
 - [ ] Improving the code structure.
@@ -102,7 +103,7 @@ The arguments for training can be found in `options.py`.
 
 Train the model:
 ```bash
-python main.py --project=your_project --datasets=camelyon16/tcga --dataset_root=/path/to/your/dataset --model_path=/path/to/save/model --cv_fold=5 --title=your_title --model=sam --sam_mask --mask_non_group_feat --mask_by_seg_area --backbone=attn --model_ema --mrh_sche --seed=2021 --mask_ratio=0.9 --select_mask --num_group=5 --group_alpha=0.5 --consistency_alpha=1000 --no_merge --num_workers=0 --persistence --wandb
+python main.py --project=your_project --datasets=camelyon16/tcga --dataset_root=/path/to/your/dataset --model_path=/path/to/save/model --cv_fold=5 --title=your_title --model=sam --sam_mask --mask_non_group_feat --mask_by_seg_area --baseline=attn --mrh_sche --seed=2021 --mask_ratio=0.9 --select_mask --num_group=5 --group_alpha=0.5 --consistency_alpha=1000 --num_workers=0 --persistence --wandb
 ```
 
 ## Citing SAM-MIL

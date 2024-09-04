@@ -177,6 +177,7 @@ def one_fold(args,k,ckc_metric,te_ckc_metric,dataset):
             'da_act': args.da_act,
             'attn_layer': args.attn_layer,
             'attn2score': args.attn2score,
+            'select_mask': args.select_mask,
             'sam_mask': args.sam_mask,
             'sigmoid_k': args.sigmoid_k,
             'sigmoid_A0': args.sigmoid_A0,
@@ -298,6 +299,9 @@ def one_fold(args,k,ckc_metric,te_ckc_metric,dataset):
         if args.tea_type == 'same':
             model_tea = model
         model_tea.merge_test = False
+    elif args.model == 'sam':
+        model_tea = deepcopy(model)
+        model_tea.test_merge = False
     else:
         model_tea = None
 

@@ -29,7 +29,7 @@ def get_cam_1d_trans(classifier, feat, attention, label, to_out):
 
     tweight = list(classifier.parameters())[-2]
     cam_maps = torch.einsum('gf,cf->cg', features, tweight)
-    # 加上bias
+    # bias
     cam_maps += list(classifier.parameters())[-1].data[0]
     # cam_maps = classifier(feat.squeeze(0)).transpose(0,1)
     cam_maps = torch.nn.functional.softmax(cam_maps, dim=0)
@@ -45,7 +45,7 @@ def get_cam_1d(classifier, feat, attention, label):
     features = torch.einsum('ns,n->ns', feat.squeeze(0), attention.squeeze(0))  ### n x fs
     tweight = list(classifier.parameters())[-2]
     cam_maps = torch.einsum('gf,cf->cg', features, tweight)
-    # 加上bias
+    # bias
     cam_maps += list(classifier.parameters())[-1].data[0]
     # cam_maps = classifier(feat.squeeze(0)).transpose(0,1)
     cam_maps = torch.nn.functional.softmax(cam_maps, dim=0)
@@ -440,17 +440,26 @@ class sam_mil(nn.Module):
 
         return x_masked, mask.squeeze(0), ids_restore
 
+    def compute_attn_with_grad(self, x, label=None):
+        with torch.no_grad():
+            x = self.patch_to_emb(x)
+            x = self.dp(x)
+
+        x, attn, act = self.online_encoder(x, return_attn=True, return_act=True)
+
+        if isinstance(attn, (list, tuple)):
+            attn = torch.cat([attn[i].mean(dim=1).squeeze(0) for i in range(len(attn))], dim=0)
+        else:
+            attn = attn.mean(dim=0).squeeze(0)
+
+        return attn
+
+
     @torch.no_grad()
     def forward_teacher(self, x, return_attn=False, label=None):
 
         x = self.patch_to_emb(x)
         x = self.dp(x)
-        x = self.rrt(x)
-        if self.test_merge:
-            p = x.size(1)
-            self.training = False
-            x = self.merge(x)
-            self.training = True
 
         x_shortcut = x.clone()
 
@@ -486,57 +495,6 @@ class sam_mil(nn.Module):
         ## softmax need to set dim=1
         return x, attn, self.predictor(x)
 
-    def forward_pure(self, x, label=None, criterion=None):
-        bs, ps, _ = x.size()
-
-        x = self.patch_to_emb(x)
-        x = self.dp(x)
-        x = self.rrt(x)
-
-        len_keep = x.size(1)
-
-        if self.backbone == 'dsmil':
-            student_cls_feat, student_logit, inst_loss = self.online_encoder(x, mask_enable=False, label=label,
-                                                                             criterion=criterion)
-
-            logits_loss = criterion(student_logit.view(bs, -1), label)
-            logits_loss = logits_loss * 0.5 + inst_loss * 0.5
-
-            return logits_loss, 0, ps, len_keep
-        # elif self.backbone == 'attn':
-        else:
-            x = self.online_encoder(x)
-            x = self.predictor(x)
-            return x, 0, ps, len_keep
-
-    @torch.no_grad()
-    def forward_test(self, x, return_attn=False, no_norm=False):
-        x = self.patch_to_emb(x)
-        x = self.dp(x)
-        x = self.rrt(x)
-        if self.test_merge:
-            x = self.merge(x)
-
-        if self.backbone == 'dsmil':
-            if return_attn:
-                _, x, inst, a = self.online_encoder(x, return_attn=True, no_norm=no_norm)
-            else:
-                _, x, inst = self.online_encoder(x)
-
-            x = [x, inst]
-
-        else:
-            if return_attn:
-                x, a = self.online_encoder(x, return_attn=True, no_norm=no_norm)
-            else:
-                x = self.online_encoder(x)
-            x = self.predictor(x)
-
-        if return_attn:
-            return x, a
-        else:
-            return x
-
     def forward_loss(self, student_cls_feat, teacher_cls_feat):
         if teacher_cls_feat is not None:
             cls_loss = self.cl_loss(student_cls_feat, teacher_cls_feat.detach())
@@ -550,7 +508,6 @@ class sam_mil(nn.Module):
                 is_group_feat=None, relative_area=None):
         x = self.patch_to_emb(x)
         x = self.dp(x)
-        x = self.rrt(x)
 
         bs, ps, _ = x.size()
 
@@ -563,7 +520,7 @@ class sam_mil(nn.Module):
         else:
             mask_ids, mask = None, None
 
-        x = self.merge(x)
+        # x = self.merge(x)
         len_keep = x.size(1)
 
         if self.backbone == 'dsmil':

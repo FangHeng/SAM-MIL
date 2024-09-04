@@ -92,6 +92,7 @@ def parse_args():
 
     ## sam_mil
     parser.add_argument('--sam_mask', action='store_true', help='Enable SAM mask')
+    parser.add_argument('--select_mask', action='store_true',  help='Enable select_mask')
     parser.add_argument('--sigmoid_k', default=0.0005, type=float, help='Adjustable sigmoid k')
     parser.add_argument('--sigmoid_A0', default=5000, type=float, help='Adjustable sigmoid A0')
     parser.add_argument('--mask_non_group_feat', action='store_true', help='Mask non-group feature')
@@ -100,6 +101,7 @@ def parse_args():
     parser.add_argument('--split_bag', action='store_true', help='Enable split bag')
     parser.add_argument('--group_alpha', default=0., type=float, help='alpha of group loss')
     parser.add_argument('--consistency_alpha', default=0., type=float, help='alpha of consistency loss')
+    parser.add_argument("--con_batch_size", default=2048, type=int, help='batch size of consistency compute')
 
     # Misc
     parser.add_argument('--title', default='default', type=str, help='Title of exp')

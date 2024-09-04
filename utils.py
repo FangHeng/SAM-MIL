@@ -217,35 +217,37 @@ class NLLSurvLoss(object):
             return nll_loss(hazards, S, Y, c, alpha=alpha)
 
 
-def calculate_consistency_loss(global_attn, relative_area):
-    # adjust the shape of global_attn and relative_area
-    global_attn = global_attn.squeeze(0)
+def calculate_consistency_loss(global_attn, relative_area, con_batch_size):
+    # if isinstance(global_attn, list):
+    #     global_attn = torch.tensor(global_attn)
+    # global_attn = global_attn.squeeze(0)
     relative_area = relative_area.squeeze(0)
 
-    batch_size = 1024
-    n = global_attn.size(0)
-    total_loss = 0.0
+    total_loss = torch.zeros(1, device=global_attn.device)
     count = 0
 
-    for i in range(0, n, batch_size):
-        end_i = min(i + batch_size, n)
+    unique_areas = torch.unique(relative_area)
+    for area in unique_areas:
+        indices = (relative_area == area).nonzero(as_tuple=True)[0]
+        if indices.numel() < 2:  
+            continue
 
-        batch_attn = global_attn[i:end_i].unsqueeze(1)  # add a dimension
-        all_attn = global_attn.unsqueeze(0)  # add a dimension
+        current_attn = global_attn[indices]
+        n = indices.size(0)
 
-        # calculate the difference between the batch and all
-        diffs = batch_attn - all_attn
-        norms = torch.norm(diffs, dim=1)  # [end_i - i, 36424]
-        norms = torch.norm(diffs, dim=1).unsqueeze(1)  # [batch_size, 1]
+        for i in range(0, n, con_batch_size):
+            end_i = min(i + con_batch_size, n)
+            batch_attn = current_attn[i:end_i].unsqueeze(1)  # 添加一个维度以便广播
+            all_attn = current_attn.unsqueeze(0)  # 为全局注意力添加维度以便广播
 
-        # calculate the same area
-        same_area = relative_area[i:end_i].unsqueeze(1) == relative_area.unsqueeze(0)
-        valid = same_area.float()  # transform to float
+            diffs = batch_attn - all_attn
+            norms = torch.norm(diffs, dim=1)  # [end_i - i, 36424]
+            norms = torch.norm(diffs, dim=1).unsqueeze(1)  # 现在norms的形状是[batch_size, 1]
 
-        # calculate the loss
-        total_loss += (norms * valid).sum().item()  # sum the loss
-        count += valid.sum().item()  # sum the count
+            total_loss += norms.sum()
+            count += norms.numel()
 
-    # calculate the average loss
-    average_loss = total_loss / count if count > 0 else 0
-    return average_loss
+    average_loss = total_loss / count if count > 0 else torch.tensor(0.0, device=global_attn.device, dtype=global_attn.dtype)
+
+    # return average_loss
+    return average_loss.squeeze()
