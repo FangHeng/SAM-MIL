@@ -335,7 +335,7 @@ def test(args,model,loader,device,criterion,model_tea=None,opt_thr=None):
                 batch_size=bag.size(0)
 
             label=data[1].to(device)
-            if args.model in ('mhim','pure'):
+            if args.model in ('sam','mhim','pure'):
                 test_logits = model.forward_test(bag)
                 if args.baseline == 'dsmil':
                     test_logits = test_logits[0]
