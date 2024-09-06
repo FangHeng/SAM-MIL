@@ -129,7 +129,7 @@ class MCA(nn.Module):
 class sam_mil(nn.Module):
     def __init__(self, input_dim=1024, mlp_dim=512, mask_ratio=0, n_classes=2, temp_t=1., temp_s=1., dropout=0.25,
                  n_robust=0, act='relu', select_mask=False, select_inv=False, select_type='mean', mask_ratio_h=0.,
-                 mrh_sche=None, mrh_type='tea', mask_ratio_hr=0., mask_ratio_l=0., da_act='gelu', backbone='selfattn',
+                 mrh_sche=None, mrh_type='tea', mask_ratio_hr=0., mask_ratio_l=0., da_act='gelu', baseline='selfattn',
                  da_gated=False, da_bias=False, da_dropout=False, dsmil_cls_attn=True, dsmil_flat_B=False,
                  dsmil_attn_index='max', rrt=False, rrt_k=15, trans_conv=True, attn2score=False, score_label=-1,
                  cl_type='feat', head=8, merge_enable=False, merge_k=10, merge_mm=0.9998, merge_ratio=0.1,
@@ -165,9 +165,9 @@ class sam_mil(nn.Module):
 
         self.patch_to_emb = nn.Sequential(*self.patch_to_emb)
 
-        self.backbone = backbone
+        self.baseline = baseline
 
-        self.online_encoder = Backbone(mlp_dim, backbone, attn2score, head=head, act=da_act, gated=da_gated,
+        self.online_encoder = Backbone(mlp_dim, baseline, attn2score, head=head, act=da_act, gated=da_gated,
                                        bias=da_bias, dropout=da_dropout, flat_B=dsmil_flat_B,
                                        attn_index=dsmil_attn_index)
 
@@ -463,7 +463,7 @@ class sam_mil(nn.Module):
 
         x_shortcut = x.clone()
 
-        if self.backbone == 'dsmil':
+        if self.baseline == 'dsmil':
             if return_attn:
                 x, _, _, attn = self.online_encoder(x, return_attn=True, label=label)
                 if self.test_merge:
@@ -486,7 +486,7 @@ class sam_mil(nn.Module):
 
             if self.attn2score:
                 self.score_label = None if self.score_label == -1 else self.score_label
-                if self.backbone == 'selfattn':
+                if self.baseline == 'selfattn':
                     attn = get_cam_1d_trans(self.predictor, act, attn[0], self.score_label,
                                             self.online_encoder.attn_model.layer2.attn.to_out)
                 else:
@@ -523,7 +523,7 @@ class sam_mil(nn.Module):
         # x = self.merge(x)
         len_keep = x.size(1)
 
-        if self.backbone == 'dsmil':
+        if self.baseline == 'dsmil':
             # forward online network
             student_cls_feat, student_logit, inst_loss = self.online_encoder(x, label=label, criterion=criterion)
 
