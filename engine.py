@@ -260,7 +260,7 @@ def val_loop(args,model,loader,device,criterion,early_stopping,epoch,model_tea=N
                 batch_size=bag.size(0)
 
             label=data[1].to(device)
-            if args.model in ('mhim','pure'):
+            if args.model in ('sam','mhim','pure'):
                 test_logits = model.forward_test(bag)
                 if args.baseline == 'dsmil':
                     test_logits = test_logits[0]

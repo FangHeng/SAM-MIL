@@ -1,4 +1,3 @@
-
 import copy
 import torch
 import numpy as np
@@ -336,7 +335,7 @@ class sam_mil(nn.Module):
                                                                        random_ratio=0.001)
 
                     # split the area indices into retained and masked indices
-                    retained_idxs_local = area_mask_ids[0][:area_len_keep] # retained indices
+                    retained_idxs_local = area_mask_ids[0][:area_len_keep]  # retained indices
                     masked_idxs_local = area_mask_ids[0][area_len_keep:]  # masked indices
 
                     # get the global indices of retained and masked indices
@@ -366,7 +365,6 @@ class sam_mil(nn.Module):
                 # merge the retained and masked indices
                 retained_idxs = torch.cat(final_retained_idxs, dim=1)
                 masked_idxs = torch.cat(final_masked_idxs, dim=1)
-
 
                 # merge all the retained and masked indices
                 mask_ids = torch.cat([retained_idxs, masked_idxs], dim=1)
@@ -454,6 +452,22 @@ class sam_mil(nn.Module):
 
         return attn
 
+    @torch.no_grad()
+    def forward_test(self, x, return_attn=False, no_norm=False):
+        x = self.patch_to_emb(x)
+        x = self.dp(x)
+
+        if return_attn:
+            x, a = self.online_encoder(x, return_attn=True, no_norm=no_norm)
+        else:
+            x = self.online_encoder(x)
+
+        x = self.predictor(x)
+
+        if return_attn:
+            return x, a
+        else:
+            return x
 
     @torch.no_grad()
     def forward_teacher(self, x, return_attn=False, label=None):
