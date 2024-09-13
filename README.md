@@ -79,6 +79,24 @@ python extract_features_from_pt.py --data_feat_pt_dir '/path/to/pt/features' --d
 python 03_extract_sam_info.py --data_feat_h5_dir '/path/to/h5/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --output_dir '/path/to/save/sam_info' --data_group_dir '/path/to/seg_files' --slide_ext .tif/.svs
 ```
 
+#### Folder Structure
+```
+.DATASET_ROOT//
+    ├── pt_files    // The extracted features in .pt format
+        ├── slide1.pt
+        ├── slide2.pt
+        └── ...
+    ├── h5_files    // (Optional) The extracted features in .h5 format
+        ├── slide1.h5
+        ├── slide2.h5
+        └── ...
+    ├── sam_info    // The SAM information inputs
+        ├── slide1.h5
+        ├── slide2.h5
+        └── ...
+    └── labels.csv  // The labels of the slides
+```
+        
 #### Feature Extraction
 Some code snippets about PLIP feature are shown below:
 
@@ -102,24 +120,6 @@ class PLIP(torch.nn.Module):
         return self.model(batch_input).image_embeds
 ```
 
-#### Folder Structure
-```
-.DATASET_ROOT//
-    ├── pt_files    // The extracted features in .pt format
-        ├── slide1.pt
-        ├── slide2.pt
-        └── ...
-    ├── h5_files    // (Optional) The extracted features in .h5 format
-        ├── slide1.h5
-        ├── slide2.h5
-        └── ...
-    ├── sam_info    // The SAM information inputs
-        ├── slide1.h5
-        ├── slide2.h5
-        └── ...
-    └── labels.csv  // The labels of the slides
-```
-        
         
 ## Training
 
