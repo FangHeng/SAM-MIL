@@ -62,7 +62,8 @@ TCGA-NSCLC:
 python 02_extract_features_and_group_feature.py --data_h5_dir '/path/to/patches' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --use_sam --patch_size 512 --batch_size 512 --target_patch_size 224 --slide_ext .svs
 ```
 
-#### 3. Generate feature from original extracted features.
+#### 2-1. (Optional) Generate feature from original extracted features.
+> If you have already extracted the features from the patches, you can use the following code to generate the features for the model input.
 
 From features(.h5) to our model input:
 ```bash
@@ -74,7 +75,7 @@ From features(.pt) to our model input:
 python extract_features_from_pt.py --data_feat_pt_dir '/path/to/pt/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --patch_size 512 --slide_ext .tif/.svs
 ```
 
-#### 4. Generate sam info:
+#### 3. Generate SAM info:
 ```bash
 python 03_extract_sam_info.py --data_feat_h5_dir '/path/to/h5/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --output_dir '/path/to/save/sam_info' --data_group_dir '/path/to/seg_files' --slide_ext .tif/.svs
 ```
