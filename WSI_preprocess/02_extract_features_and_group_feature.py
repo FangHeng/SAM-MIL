@@ -163,7 +163,6 @@ parser.add_argument('--data_segment_dir', type=str, default=None)
 # parser.add_argument('--group_features', default=False, action='store_true')
 parser.add_argument('--patch_size', type=int, default=256,
                     help='patch size for the patches, only for SAM analysis')
-# parser.add_argument('--'
 args = parser.parse_args()
 
 if __name__ == '__main__':

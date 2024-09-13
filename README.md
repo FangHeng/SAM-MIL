@@ -34,7 +34,7 @@ The preprocessing code can be found in the `WSI_preprocess` folder.
 - We adjusted the preprocessing steps in the [CLAM](https://github.com/mahmoodlab/CLAM) repository.
 We made modifications to the original data preprocessing.
 
-- PLIP model and weight can be found in [this](https://github.com/PathologyFoundation/plip).
+- PLIP model and weight can be found in [this link](https://github.com/PathologyFoundation/plip).
 
 [//]: # (Download the preprocessed patch features: [Baidu Cloud]&#40;&#41;.)
 
@@ -74,6 +74,11 @@ From features(.pt) to our model input:
 python extract_features_from_pt.py --data_feat_pt_dir '/path/to/pt/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --feat_dir '/path/to/save/features' --patch_size 512 --slide_ext .tif/.svs
 ```
 
+#### 4. Generate sam info:
+```bash
+python 03_extract_sam_info.py --data_feat_h5_dir '/path/to/h5/features' --data_slide_dir '/path/to/WSIs' --data_segment_dir '/path/to/segments' --csv_path '/path/to/process_list_autogen.csv' --output_dir '/path/to/save/sam_info' --data_group_dir '/path/to/seg_files' --slide_ext .tif/.svs
+```
+
 #### Feature Extraction
 Some code snippets about PLIP feature are shown below:
 
@@ -97,6 +102,25 @@ class PLIP(torch.nn.Module):
         return self.model(batch_input).image_embeds
 ```
 
+#### Folder Structure
+```
+.DATASET_ROOT//
+    ├── pt_files    // The extracted features in .pt format
+        ├── slide1.pt
+        ├── slide2.pt
+        └── ...
+    ├── h5_files    // (Optional) The extracted features in .h5 format
+        ├── slide1.h5
+        ├── slide2.h5
+        └── ...
+    ├── sam_info    // The SAM information inputs
+        ├── slide1.h5
+        ├── slide2.h5
+        └── ...
+    └── labels.csv  // The labels of the slides
+```
+        
+        
 ## Training
 
 The arguments for training can be found in `options.py`.
