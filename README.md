@@ -3,8 +3,7 @@
 Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification**", ACM Multimedia 2024. 
 [[arXiv]](https://arxiv.org/abs/2407.17689) 
 [[PDF]](https://arxiv.org/pdf/2407.17689)
-
-[//]: # ([[ACM]]&#40;&#41;)
+[[ACM]](https://dl.acm.org/doi/abs/10.1145/3664647.3681534)
 
 <p align = "center">
 <img src="./doc/sammil.png" width="60%"/>
@@ -136,10 +135,11 @@ python main.py --project=your_project --datasets=camelyon16/tcga --dataset_root=
 If you find SAM-MIL useful in your research, please consider citing the following paper:
 
 ```
-@article{fang2024sam,
+@inproceedings{fang2024sam,
   title={SAM-MIL: A Spatial Contextual Aware Multiple Instance Learning Approach for Whole Slide Image Classification},
   author={Fang, Heng and Huang, Sheng and Tang, Wenhao and Huangfu, Luwen and Liu, Bo},
-  journal={arXiv preprint arXiv:2407.17689},
+  booktitle={Proceedings of the 32nd ACM International Conference on Multimedia},
+  pages={6083--6092},
   year={2024}
 }
 ```
