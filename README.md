@@ -14,8 +14,8 @@ Official repository of "**SAM-MIL: A Spatial Contextual Aware Multiple Instance 
 - [x] Add the code for the training and testing of the model.
 - [x] Add the code for the preprocessing of the datasets.
 - [x] Add the code for the visualization of the results.
+- [x] Add the extracted features of the datasets(Camelyon16, TCGA-NSCLC).
 - [ ] Improving the visualization code.
-- [ ] Add the extracted features of the datasets(Camelyon16, TCGA-NSCLC).
 - [ ] Improving README document.
 - [ ] Improving the code structure.
 
@@ -35,7 +35,7 @@ We made modifications to the original data preprocessing.
 
 - PLIP model and weight can be found in [this link](https://github.com/PathologyFoundation/plip).
 
-[//]: # (Download the preprocessed patch features: [Baidu Cloud]&#40;&#41;.)
+Download the preprocessed patch features: [Baidu Cloud](https://pan.baidu.com/s/15MsheerIF-CF7fUolB1q6g?pwd=2024).
 
 #### 1. Create patches and SAM segmentations for the WSIs.
 
